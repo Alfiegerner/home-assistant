@@ -16,6 +16,11 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_FAN_ONLY,
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
+    CURRENT_HVAC_OFF,
+    CURRENT_HVAC_HEAT,
+    CURRENT_HVAC_COOL,
+    CURRENT_HVAC_DRY,
+    CURRENT_HVAC_FAN,
     SUPPORT_FAN_MODE,
     SUPPORT_SWING_MODE,
     SUPPORT_TARGET_TEMPERATURE,
@@ -226,6 +231,23 @@ class SensiboClimate(ClimateDevice):
         if not self._ac_states["on"]:
             return HVAC_MODE_OFF
         return SENSIBO_TO_HA.get(self._ac_states["mode"])
+
+    @property
+    def hvac_action(self):
+        """Return current action ie. heating, cooling etc."""
+        if self.hvac_mode == HVAC_MODE_HEAT:
+            return CURRENT_HVAC_HEAT
+        if self.hvac_mode == HVAC_MODE_COOL:
+            return CURRENT_HVAC_COOL
+        if self.hvac_mode == HVAC_MODE_DRY:
+            return CURRENT_HVAC_DRY
+        if self.hvac_mode == HVAC_MODE_FAN_ONLY:
+            return CURRENT_HVAC_FAN
+        if self.hvac_mode == HVAC_MODE_HEAT_COOL:
+            # no way of knowing what we're actually doing, return something to show 'on'
+            return CURRENT_HVAC_HEAT
+
+        return CURRENT_HVAC_OFF
 
     @property
     def current_humidity(self):
